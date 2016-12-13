@@ -15,9 +15,9 @@ NOTE that plots are labelled with "mm/day" although it is recognised that this a
 
 The method uses 100 bins whose limits are defined thus:
 
+        bin2=np.exp(np.log(0.005)+np.sqrt(np.linspace(0,98,99)*((np.square(np.log(120.)-np.log(0.005)))/59.)))
         bin=np.zeros(100)
         bin[1:]=bin2[0:99]
-        bin2=np.exp(np.log(0.005)+np.sqrt(np.linspace(0,98,99)*((np.square(np.log(120.)-np.log(0.005)))/59.)))
 
 This samples rainfall intensities in the range 0.005 to 2209 mm/day. Counts of values into element ``[i]`` of the output histogram are made such that ``pbin[i] <= values < pbin[i+1]``. Any values larger(smaller) than that are all lumped into the 100th(first) bin.
 
