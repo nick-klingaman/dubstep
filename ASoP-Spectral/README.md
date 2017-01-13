@@ -62,7 +62,7 @@ Citation
 
 Users who apply the software resulting in presentations or papers are kindly asked to cite:
 
-* *Klingaman, N. P., Martin, G. M., and Moise, A.: ASoP (v1.0): A set of methods for analyzing scales of precipitation in general circulation models, Geosci. Model Dev., http://www.geosci-model-dev-discuss.net/gmd-2016-161/*
+* *Klingaman, N. P., Martin, G. M., and Moise, A.: ASoP (v1.0): A set of methods for analyzing scales of precipitation in general circulation models, Geosci. Model Dev.,10, 57-83, doi:10.5194/gmd-10-57-2017, 2017*
 
 =======
 Modules
