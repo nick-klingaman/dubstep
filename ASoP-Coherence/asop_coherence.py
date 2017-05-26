@@ -773,11 +773,13 @@ def plot_equalarea_corr(distance_correlations,distance_ranges,distance_max,model
             raise Exception('You are plotting correlations for more than one dataset, but you have not specified a list of legend names with the legend_names option to plot_equalarea_corr.')
         if set_desc == None:
             raise Exception('You are plotting correlations for more than one dataset, but you have not specified a description for this dataset with the set_desc option to plot_equalarea_corr.')
+    else:
+        raise Exception('plot_equalarea_corr expects the distance_correlations argument to be either a one-dimensional (for only one dataset) or two-dimensional (for multiple datasets).')
 
     cfp.setvars(file='asop_coherence.'+set_desc+'_precip_spatial_correlations.ps',text_fontsize=20,axis_label_fontsize=20,legend_text_size=18)
     cfp.gopen(figsize=[10,9])
 
-    if nmodels > 1:
+    if distance_correlations.ndim == 2:
         dmax=np.amax(distance_ranges[:,2,:])
         print dmax
         xmax=dmax*1.05
@@ -794,7 +796,7 @@ def plot_equalarea_corr(distance_correlations,distance_ranges,distance_max,model
                 xpts=[distance_ranges[model,0,dist],distance_ranges[model,2,dist]]
                 ypts=[distance_correlations[model,dist],distance_correlations[model,dist]]
                 cfp.plotvars.plot.plot(xpts,ypts,linewidth=2,color=colors[model])
-    else:
+    elif distance_correlations.ndim == 1:
         dmax=np.amax(distance_ranges[2,:])
         xmax=dmax*1.05
         cfp.gset(xmin=0,xmax=xmax,ymin=-0.5,ymax=1.0)
@@ -886,6 +888,8 @@ def plot_autocorr(time_correlations,time_max,dt=None,model_dict=None,colors=None
             raise Exception('You are plotting correlations for more than one dataset, but you have not specified a description for this dataset with the set_desc option to plot_autocorr.')
         if dt == None:
             raise Exception('You are plotting correlations for more than one dataset, but you have not specified an array of temporal sampling intervals with the dt option to plot_autocorr.')
+    else:
+        raise Exception('plot_autocorr expects the time_correlations argument to be either a one-dimensional (for only one dataset) or two-dimensional (for multiple datasets).')
 
     cfp.setvars(file='asop_coherence.'+set_desc+'_precip_temporal_correlations.ps',text_fontsize=20,axis_label_fontsize=20,legend_text_size=18)
     cfp.gopen(figsize=[10,9])
@@ -895,7 +899,7 @@ def plot_autocorr(time_correlations,time_max,dt=None,model_dict=None,colors=None
     xmax=tmax+np.amax(dt_min)*0.5
     cfp.gset(xmin=0,xmax=xmax,ymin=-0.5,ymax=1.0)
 
-    if nmodels > 1:
+    if time_correlations.ndim == 2:
         for model in xrange(nmodels):
             xpts=(np.arange(time_max[model]))*dt_min[model]
             ypts=time_correlations[model,0:time_max[model]]
@@ -906,7 +910,7 @@ def plot_autocorr(time_correlations,time_max,dt=None,model_dict=None,colors=None
             else:
                 cfp.lineplot(x=xpts[1:],y=ypts[1:],linestyle=':',marker='o',color=colors[model],markersize=8,label=legend_names[model],
                              xticks=np.arange(11)*tmax//10,yticks=np.arange(12)*0.1-0.1)
-    else:
+    elif time_correlations.ndim == 1:
         xpts=(np.arange(time_max))*dt_min
         ypts=time_correlations[0:time_max]
         cfp.lineplot(x=xpts[1:],y=ypts[1:],linestyle=':',marker='o',color=colors,markersize=8,label=legend_names,
@@ -918,4 +922,3 @@ def plot_autocorr(time_correlations,time_max,dt=None,model_dict=None,colors=None
     cfp.plotvars.plot.set_xlabel('Time (minutes)',fontsize=20)
     cfp.plotvars.plot.set_ylabel('Auto-correlation (mean of all points)',fontsize=20)
     cfp.gclose()
-
