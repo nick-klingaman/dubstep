@@ -886,7 +886,7 @@ def plot_autocorr(time_correlations,time_max,dt=None,model_dict=None,colors=None
             raise Exception('You are plotting correlations for more than one dataset, but you have not specified a list of legend names with the legend_names option to plot_autocorr.')
         if set_desc == None:
             raise Exception('You are plotting correlations for more than one dataset, but you have not specified a description for this dataset with the set_desc option to plot_autocorr.')
-        if dt == None:
+        if dt.all() == None:
             raise Exception('You are plotting correlations for more than one dataset, but you have not specified an array of temporal sampling intervals with the dt option to plot_autocorr.')
     else:
         raise Exception('plot_autocorr expects the time_correlations argument to be either a one-dimensional (for only one dataset) or two-dimensional (for multiple datasets).')
