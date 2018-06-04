@@ -650,6 +650,7 @@ def compute_spacetime_summary(precip,ndivs):
     for lon in xrange(nlon):
         for lat in xrange(nlat):
             this_precip = precip.data[:,lat,lon]
+            nt = np.size(this_precip)
             for t in xrange(nt-1):
                 if this_precip[t] > 1:
                     if (this_precip[t] > upper_thresh[lat,lon]):
