@@ -319,7 +319,7 @@ def plot_equalgrid_corr(corr_map,lag_vs_distance,autocorr,npts,model_dict,title=
       * autocorr (lag_length):
          The composite auto-correlation of precipitation at the central point, averaged over
          all regions in the domain.
-      * npts (region_size):
+      * npts (lag_length,region_size):
          The number of gridpoints in each distance bin of the lag_vs_distance array.  Used to
          to determine whether there are any points in each distance bin.
          
@@ -405,7 +405,7 @@ def plot_equalgrid_corr(corr_map,lag_vs_distance,autocorr,npts,model_dict,title=
     ticklabels=['Centre','0.5']
     max_dist=0
     for dist in xrange(2,region_size):
-        if npts[dist] > 0 :
+        if npts[0,dist] > 0 :
             ticklabels.append(str(dist-0.5))
             max_dist=dist
     ticklabels.append(str(max_dist+0.5))
@@ -510,7 +510,7 @@ def compute_equalarea_corr(precip,model_dict):
     distance_lists = np.zeros((max_box_distance,max_box_distance*max_boxes))
     distance_ranges = np.zeros((3,max_box_distance))
     distance_correlations = np.zeros((max_box_distance))
-    
+   
     print '----> Info: Sub-boxes are '+str(box_length_x)+'x'+str(box_length_y)+' gridboxes in this model (nx x ny).'
     for box_xstart in xrange(0,nlon+1-box_length_x,box_length_x):
         box_xcentre = box_xstart+box_length_x//2
@@ -528,10 +528,11 @@ def compute_equalarea_corr(precip,model_dict):
                     distance_lists[distance,npts[distance]]=km_distance
                     remote_precip=precip[:,box_y+box_ystart,box_x+box_xstart]
                     if (box_x + box_xstart == box_xcentre) and (box_y + box_ystart == box_ycentre):
-                        autocorr=autocorr+1
-                    else:
-                        distance_correlations[distance]=distance_correlations[distance]+np.corrcoef([central_precip.data,remote_precip.data])[1,0]
-                    npts[distance]=npts[distance]+1
+                        autocorr=autocorr+1                
+                    corr=np.corrcoef([central_precip.data,remote_precip.data])[1,0]
+                    if not np.isnan(corr):
+                        distance_correlations[distance]=distance_correlations[distance]+corr
+                        npts[distance]=npts[distance]+1
             nboxes = nboxes+1
             if nboxes >= max_boxes :
                 raise Exception('ERROR: Number of sub-boxes ('+str(nboxes)+') exceeds maximum number of sub-boxes ('+str(max_boxes)+') exceeded.  Increase size of sub-boxes (-b option) or increase parameter max_boxes in code.')
