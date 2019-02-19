@@ -217,9 +217,12 @@ def compute_equalgrid_corr(precip,model_dict):
      * autocorr (lag_length):
         The composite auto-correlation of precipitation at the central point, averaged over all regions
         in the domain.
-     * npts (region_size):
-        The number of gridpoints in each distance bin of the lag_vs_distance array.  Used by the 
-        corresponding plotting function to determine whether there are any points in this bin.
+     * npts_map (lag_length,region_size,region_size):
+        The number of gridpoints that contributed to the composite map of correlations.  Can be used
+        to weight the correlation map if averaging over multiple maps.
+     * npts (lag_length,region_size):
+        The number of gridpoints in each lag and distance bin of the lag_vs_distance array.  Used by 
+        the corresponding plotting function to determine whether there are any points in this bin.
     """
     
     lag_length = model_dict['lag_length']
@@ -229,7 +232,8 @@ def compute_equalgrid_corr(precip,model_dict):
     nlat=len(precip.coord('latitude').points)
     print '----> Info: Size of domain in native gridpoints: '+str(nlon)+' longitude x '+str(nlat)+' latitude.'
     nregions=0
-    npts=np.zeros(region_size,dtype=np.int32)
+    npts=np.zeros((lag_length,region_size),dtype=np.int32)
+    npts_map=np.zeros((lag_length,region_size,region_size),dtype=np.int32)
     distance_x=np.zeros(region_size)
     distance_y=np.zeros(region_size)
     corr_map=np.zeros((lag_length,region_size,region_size))
@@ -249,34 +253,42 @@ def compute_equalgrid_corr(precip,model_dict):
                     distance=np.int(round(np.sqrt(distance_x[region_x]*distance_x[region_x]+distance_y[region_y]*distance_y[region_y])))-1
                     remote_precip=precip[:,region_y+region_ystart,region_x+region_xstart]
                     corr = np.corrcoef([central_precip.data,remote_precip.data])[1,0]
-                    if corr == np.nan:
-                        print 'NaN detected',region_xcentre,region_ycentre,region_x,region_y,central_precip.data,remote_precip.data
-                    corr_map[0,region_y,region_x]=corr+corr_map[0,region_y,region_x]
+                    if not np.isnan(corr):
+                        corr_map[0,region_y,region_x]=corr+corr_map[0,region_y,region_x]
+                        npts_map[0,region_y,region_x]=npts_map[0,region_y,region_x]+1
                     if (region_x + region_xstart == region_xcentre) and (region_y + region_ystart == region_ycentre):
                         autocorr[0]=autocorr[0]+1
                         for lag in xrange(1,lag_length):
-                            autocorr[lag]=np.corrcoef(central_precip.data,np.roll(central_precip.data,lag,0))[1,0]+autocorr[lag]
+                            corr = np.corrcoef(central_precip.data,np.roll(central_precip.data,lag,0))[1,0]
+			    if not np.isnan(corr):
+			        corr_map[lag,region_y,region_x]=corr+corr_map[lag,region_y,region_x]
+				npts_map[lag,region_y,region_x]=npts_map[lag,region_y,region_x]+1
+                                autocorr[lag]=corr+autocorr[lag]
+                                npts[lag,0]=npts[lag,0]+1
                     else:
-                        lag_vs_distance[0,distance]=lag_vs_distance[0,distance]+corr
+                        if not np.isnan(corr):
+			    lag_vs_distance[0,distance]=lag_vs_distance[0,distance]+corr
+			    npts[0,distance]=npts[0,distance]+1
                         for lag in xrange(1,lag_length):
                             corr = np.corrcoef([central_precip.data,np.roll(remote_precip.data,lag,0)])[1,0]
-                            if corr == np.nan:
-                                print 'NaN detected',region_xcentre,region_ycentre,region_x,region_y,central_precip.data,remote_precip.data
-                            corr_map[lag,region_y,region_x] = corr+corr_map[lag,region_y,region_x]
-                            lag_vs_distance[lag,distance] = corr+lag_vs_distance[lag,distance]
-                        npts[distance]=npts[distance]+1                                                
+                            if not np.isnan(corr):
+                                corr_map[lag,region_y,region_x] = corr+corr_map[lag,region_y,region_x]
+                                npts_map[lag,region_y,region_x] = npts_map[lag,region_y,region_x]+1
+                                lag_vs_distance[lag,distance] = corr+lag_vs_distance[lag,distance]
+                                npts[lag,distance]=npts[lag,distance]+1
             nregions = nregions+1
-    corr_map = corr_map/nregions
+    corr_map = corr_map/npts_map
     print '----> Info: There are '+str(nregions)+' '+str(region_size)+'x'+str(region_size)+' sub-regions in your input data.'
     for lag in xrange(lag_length):
         for dist in xrange(region_size):
-            if npts[dist] > 0:
-                lag_vs_distance[lag,dist]=lag_vs_distance[lag,dist]/npts[dist]
+            if npts[lag,dist] > 0:
+                lag_vs_distance[lag,dist]=lag_vs_distance[lag,dist]/npts[lag,dist]
             # If there are no gridpoints in range, set correlation to a missing value
-            if npts[dist] == 0:
+            if npts[lag,dist] == 0:
                 lag_vs_distance[lag,dist]=-999
-        autocorr[lag]=autocorr[lag]/(nregions)
-    return(corr_map,lag_vs_distance,autocorr,npts)
+        print lag,autocorr[lag]
+        autocorr[lag]=autocorr[lag]/(npts[lag,0])
+    return(corr_map,lag_vs_distance,autocorr,npts_map,npts)
 
 def plot_equalgrid_corr(corr_map,lag_vs_distance,autocorr,npts,model_dict,title=True,colorbar=True):
 
