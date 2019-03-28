@@ -1,0 +1,16 @@
+# dubstep
+Diagnostics from the CSSP Brazil DUBSTEP project on sub-seasonal rainfall
+
+=====
+First study of Matt's scripts:
+There are three master scripts:
+	save_weekly_forecasts_ukmo_ncep.py
+	save_weekly_forecasts_ecmf.py
+	analyse_weekly_forecasts_final.py
+
+Suggestion: start with the ukmo data sorting
+		do not go too deep, take a look how data is used in analysis
+=====
+Modification by Liang
+
+
