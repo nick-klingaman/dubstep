@@ -24,11 +24,11 @@ from matplotlib.colors import BoundaryNorm
 from matplotlib.ticker import MaxNLocator
 
 def default_options():
-    
+
     """
     Dummy function to return initial values of key parameters that must be defined.
     """
-    
+
     region_size=0
     input_box_size=0
     lag_length=0
@@ -41,9 +41,9 @@ def default_options():
     return(region_size,input_box_size,lag_length,autocorr_length,time_type,grid_type,time_desc,grid_desc,model_desc)
 
 def parameters():
-    
+
     """
-    Parameters that control the size of arrays used in other functions. 
+    Parameters that control the size of arrays used in other functions.
     """
 
     max_box_distance=100
@@ -70,16 +70,24 @@ def read_precip(model_dict):
                                      latitude=lambda cell: model_dict['region'][0] <= cell <= model_dict['region'][1],
                                      longitude=lambda cell: model_dict['region'][2] <= cell <= model_dict['region'][3])
     precip = iris.load_cube(model_dict['infile'],constraint)*model_dict['scale_factor']
+    try:
+        precip.coord('latitude').guess_bounds()
+    except:
+        pass
+    try:
+        precip.coord('longitude').guess_bounds()
+    except:
+        pass
     return(precip)
 
 def compute_histogram(precip,bins):
 
     """
-    Computes 1D and 2D histograms of precipitation from an input iris cube of precipitation.  
-    The 2D histogram is the histogram of precipitation on consecutive timesteps. 
-    
+    Computes 1D and 2D histograms of precipitation from an input iris cube of precipitation.
+    The 2D histogram is the histogram of precipitation on consecutive timesteps.
+
     Arguments:
-    * precip : 
+    * precip :
        An iris cube of precipitation
     * bins:
        A numpy array of the edges of the bins for which to compute the histogram,
@@ -102,7 +110,7 @@ def compute_histogram(precip,bins):
         next_slice.data = np.roll(t_slice.data,1,0)
         twod_hist_temp,xedges,yedges = np.histogram2d(t_slice.data,next_slice.data,bins)
         twod_hist=twod_hist+twod_hist_temp
-    twod_hist=twod_hist/np.sum(twod_hist)        
+    twod_hist=twod_hist/np.sum(twod_hist)
     oned_hist=oned_hist/np.float(np.sum(oned_hist))
     return(oned_hist,twod_hist)
 
@@ -112,7 +120,7 @@ def plot_histogram(oned_hist,twod_hist,model_dict,bins,title=True,colorbar=True)
     Creates a PostScript plot of the 1D and 2D histograms calculated in compute_histogram.
 
     Arguments:
-    * oned_hist: 
+    * oned_hist:
        The 1D histogram computed in compute_histogram.
     * twod_hist:
        The 2D histogram computed in compute_histogram.
@@ -120,7 +128,7 @@ def plot_histogram(oned_hist,twod_hist,model_dict,bins,title=True,colorbar=True)
        The dictioary containing details of this model.
     * bins:
        The edges of the histogram bins, as a numpy array.
-    
+
     Optional arguments:
     * title:
        A logical to control whether the title is printed at the top of the plot (useful for creating multi-panel plots).
@@ -182,25 +190,25 @@ def plot_histogram(oned_hist,twod_hist,model_dict,bins,title=True,colorbar=True)
     plt.savefig(plot_name,bbox_inches='tight')
 
 def compute_equalgrid_corr(precip,model_dict):
-    
+
     """
-    Compute correlations in space and time, using the native spatial and temporal 
+    Compute correlations in space and time, using the native spatial and temporal
     resolutions of the input data.
 
     Method:
     The input spatial domain is broken down into non-overlapping regions of N x N gridpoints, where
     N is controlled by the "region_size" input parameter.
 
-    Correlations in both space and time are computed with respect to lag-0 at the central 
-    point in each region.  
+    Correlations in both space and time are computed with respect to lag-0 at the central
+    point in each region.
 
     Composite (average) correlations are computed over all regions in the domain.
 
     To express the average correlations as a function of distance from the central point, bins of
-    distance from the central point are created, with width delta_x (the x spacing of the input data, 
+    distance from the central point are created, with width delta_x (the x spacing of the input data,
     taken from the dataset dictionary), starting from 0.5*delta_x.  Correlations are averaged within each bin,
     at each lag.
-     
+
     Arguments:
      * precip:
         An iris cube of precipitation data
@@ -221,10 +229,10 @@ def compute_equalgrid_corr(precip,model_dict):
         The number of gridpoints that contributed to the composite map of correlations.  Can be used
         to weight the correlation map if averaging over multiple maps.
      * npts (lag_length,region_size):
-        The number of gridpoints in each lag and distance bin of the lag_vs_distance array.  Used by 
+        The number of gridpoints in each lag and distance bin of the lag_vs_distance array.  Used by
         the corresponding plotting function to determine whether there are any points in this bin.
     """
-    
+
     lag_length = model_dict['lag_length']
     region_size = model_dict['region_size']
     print '---> Computing correlations for '+str(region_size)+'x'+str(region_size)+' sub-regions'
@@ -286,8 +294,7 @@ def compute_equalgrid_corr(precip,model_dict):
             # If there are no gridpoints in range, set correlation to a missing value
             if npts[lag,dist] == 0:
                 lag_vs_distance[lag,dist]=-999
-        print lag,autocorr[lag]
-        autocorr[lag]=autocorr[lag]/(npts[lag,0])
+        autocorr[lag]=autocorr[lag]/nregions
     return(corr_map,lag_vs_distance,autocorr,npts_map,npts)
 
 def plot_equalgrid_corr(corr_map,lag_vs_distance,autocorr,npts,model_dict,title=True,colorbar=True):
@@ -295,23 +302,23 @@ def plot_equalgrid_corr(corr_map,lag_vs_distance,autocorr,npts,model_dict,title=
     """
     Plots correlations as functions of space and time, which were first computed
     using compute_equalgrid_corr.
-    
+
     Two types of plots are created:
 
         1. For each lag (from 0 to lag_length defined in model_dict), a 2D map
         of the composite correlations against the central point (at lag 0) for all
         points in the region (of length region_size).
-        
+
         2. A single lag vs. distance plot showing the composite correlations against
         the central point (at lag 0), averaged over all points in each region in each
         distance bin (in steps of dx starting at 0.5dx), as well as the auto-correlation
         at the central point.
-        
+
     See Fig. 2 in Klingaman et al. (2017, GMD, doi:10.5194/gmd-10-57-2017) for examples
     of these diagrams.
 
     Arguments:
-      * corr_map (lag_length,region_size,region_size): 
+      * corr_map (lag_length,region_size,region_size):
          Composite maps of correlations at each lag, returned from compute_equalgrid_corr
       * lag_vs_distance (lag_length,region_size):
          Composite correlations over all regions in the domain, expressed as a function of
@@ -322,23 +329,23 @@ def plot_equalgrid_corr(corr_map,lag_vs_distance,autocorr,npts,model_dict,title=
       * npts (lag_length,region_size):
          The number of gridpoints in each distance bin of the lag_vs_distance array.  Used to
          to determine whether there are any points in each distance bin.
-         
+
     Optional arguments:
       * title:
          Include a title on the plot
       * colorbar:
          Include a colorbar on the plot
-    
+
     Returns:
       None
     """
 
     region_size = model_dict['region_size']
     lag_length = model_dict['lag_length']
-    
+
     print '---> Plotting correlation maps for '+str(region_size)+'x'+str(region_size)+' sub-regions'
     corr_con_levs=[0.05,0.15,0.25,0.35,0.45,0.55,0.65,0.75,0.85,0.95]
-    
+
     # Plot correlation maps at each lag
     for lag in xrange(lag_length):
         plot_name='asop_coherence.'+model_dict['name']
@@ -460,14 +467,14 @@ def compute_equalarea_corr(precip,model_dict):
     Computes spatial correlations as a function of physical distance (in km).  Note that unlike
     compute_equalgrid_corr, this routine does *not* compute lagged correlations; it computes only
     instantaneous correlations.
-    
+
     Method:
     As in compute_equalgrid_corr, the analysis domain is divided into square sub-regions that are
     box_size in length.  Precipitation at each point in the sub-region is correlated against the
     central point in the domain.  These correlations are binned by the physical distance from the
     central point, using bins delta_x wide starting from 0.5*delta_x.  Correlations are averaged
     within the bin and across all sub-regions.
-    
+
     Limitations:
 
     * The physical distance in the x direction is computed using the latitude of the point at the centre
@@ -481,7 +488,7 @@ def compute_equalarea_corr(precip,model_dict):
             An iris cube of precipitation to analyse
         * model_dict
             The dictionary for this dataset
-            
+
     Returns:
         * distance_correlations (max_box_distance):
             Correlations as a function of physical distance, binned by physical distance from the
@@ -490,11 +497,11 @@ def compute_equalarea_corr(precip,model_dict):
             The minimum, median and maximum distance away from the central points, considering
             all points in that distance bin
         * distance_max (max_box_distance):
-            The number of bins that contain valid points.  Can be used to subscript 
+            The number of bins that contain valid points.  Can be used to subscript
             "distance_correlations" and "distance_ranges" (i.e., distance_correlations[0:distance_max]).
     """
-    
-    
+
+
     print '---> Computing correlations for '+str(model_dict['box_size'])+'x'+str(model_dict['box_size'])+' km sub-boxes.'
     nlon=len(precip.coord('longitude').points)
     latitude = precip.coord('latitude').points
@@ -510,7 +517,7 @@ def compute_equalarea_corr(precip,model_dict):
     distance_lists = np.zeros((max_box_distance,max_box_distance*max_boxes))
     distance_ranges = np.zeros((3,max_box_distance))
     distance_correlations = np.zeros((max_box_distance))
-   
+
     print '----> Info: Sub-boxes are '+str(box_length_x)+'x'+str(box_length_y)+' gridboxes in this model (nx x ny).'
     for box_xstart in xrange(0,nlon+1-box_length_x,box_length_x):
         box_xcentre = box_xstart+box_length_x//2
@@ -528,7 +535,7 @@ def compute_equalarea_corr(precip,model_dict):
                     distance_lists[distance,npts[distance]]=km_distance
                     remote_precip=precip[:,box_y+box_ystart,box_x+box_xstart]
                     if (box_x + box_xstart == box_xcentre) and (box_y + box_ystart == box_ycentre):
-                        autocorr=autocorr+1                
+                        autocorr=autocorr+1
                     corr=np.corrcoef([central_precip.data,remote_precip.data])[1,0]
                     if not np.isnan(corr):
                         distance_correlations[distance]=distance_correlations[distance]+corr
@@ -549,17 +556,17 @@ def compute_equalarea_corr(precip,model_dict):
     return(distance_correlations,distance_ranges,distance_max)
 
 def compute_autocorr(precip,model_dict):
-    
+
     """
     Compute the lagged auto-correlation of precipitatio
     across all points in the analysis domain.
-    
+
     Arguments:
     * precip:
         An iris cube of precipitation to analyse
     * model_dict:
         The dictionary of information about this dataset
-    
+
     Returns:
     * time_correlations (max_timesteps):
         Composite lagged auto-correlations across all points
@@ -567,7 +574,7 @@ def compute_autocorr(precip,model_dict):
         The maximum valid lag in the time_correlation array (can be
         used as a subscript).
     """
-    
+
     print '---> Computing auto-correlations'
     nlon=len(precip.coord('longitude').points)
     nlat=len(precip.coord('latitude').points)
@@ -580,7 +587,7 @@ def compute_autocorr(precip,model_dict):
     print '----> Info: Computing auto-correlations for '+str(autocorr_nt)+' lags.'
     if autocorr_nt > max_timesteps:
         raise Exception('Error: Number of lags for auto-correlation exceeds maximum ('+str(max_timesteps)+').  Increase parameter max_timesteps in code or reduce autocorrelation length.')
-    
+
     for lon in xrange(nlon):
         for lat in xrange(nlat):
             for lag in xrange(autocorr_nt):
@@ -590,36 +597,38 @@ def compute_autocorr(precip,model_dict):
     time_correlations = time_correlations / (nlon*nlat)
     return(time_correlations,time_max)
 
-def compute_spacetime_summary(precip,ndivs):
-    
+
+
+def compute_spacetime_summary(precip,ndivs,twod=False,cyclic_lon=False):
+
     """
     Computes summary metrics of spatial and temporal coherence,
     as in Klingaman et al. (2017).
-        
+
     Method:
     Precipitation data are binned into "ndivs" divisions (at each gridpoint).
-        
+
     The temporal coherence metric measures the relative frequency of
     persistent upper- and lower-division precipitation to the relative
     frequency of intermittent precipitation (upper-division then
     lower-division, or lower-division then upper-division) on consecutive
     timesteps at the same gridpoint.
-        
+
     The spatial coherence metric measures the relative frequency of
     persistent upper- and lower-quartile precipitation to the relative
     frequency of intermittent precipitation, using data at neighboring
     gridpoints.
-        
+
     In Klingaman et al. (2017), the divisions are quartiles, but this
     can be adjusted with the "ndivs" argument (see below).
-        
+
     Positive values of either measure indicate coherent precipitation.
     Negative values of either measure indicate intermittent precipitation.
-        
+
     The function prints the individual upper- and lower-quartile metrics,
     as well as the combined metric (the ratio).  These values are only
     printed to the screen; they are not plotted.
-        
+
     Arguments:
     * precip:
         An iris cube of precipitation to analyse
@@ -627,18 +636,18 @@ def compute_spacetime_summary(precip,ndivs):
         The number of divisions for the spatial and coherence metrics.
         Example: ndivs=4 computes the metrics based on upper-quartile and
         lower-quartile precipitation.
-            
+
     Returns:
     * space_inter:
         The combined spatial coherence metric.
     * time_inter:
         The combined temporal coherence metric.
     """
-    
+
     print '---> Computing summary statistics for spatial and temporal intermittency'
     nlon=precip.shape[2]
     nlat=precip.shape[1]
-    
+
     lower_thresh = np.empty((nlat,nlon))
     upper_thresh = np.empty((nlat,nlon))
     for lon in xrange(nlon):
@@ -679,6 +688,7 @@ def compute_spacetime_summary(precip,ndivs):
                         elif (this_precip[t+1] > upper_thresh[lat,lon]):
                             offon_count=offon_count+1
 
+
     onon_count = onon_count/float(non)
     offoff_count = offoff_count/float(noff)
     onoff_count = onoff_count/float(non)
@@ -689,7 +699,7 @@ def compute_spacetime_summary(precip,ndivs):
     print '-----> Info: Temporal intermittency measure p(upper|lower): ',offon_count
     print '-----> Info: Temporal intermittency measure p(lower|upper): ',onoff_count
     print '----> Info: Combined temporal intermittency measure: ',time_inter
-    
+
     onon_count=0
     onoff_count=0
     offon_count=0
@@ -718,7 +728,7 @@ def compute_spacetime_summary(precip,ndivs):
     print '-----> Info: Spatial intermittency measure p(upper|lower): ',offon_count
     print '-----> Info: Spatial intermittency measure p(lower|upper): ',onoff_count
     print '----> Info: Combined spatial intermittency measure: ',space_inter
-    
+
     return (space_inter,time_inter)
 
 def plot_equalarea_corr(distance_correlations,distance_ranges,distance_max,model_dict=None,colors=None,legend_names=None,set_desc=None,legend=True,legend_location='lower left'):
@@ -727,9 +737,9 @@ def plot_equalarea_corr(distance_correlations,distance_ranges,distance_max,model
     Plots correlations as a function of physical distance from one or several datasets,
     using correlation data from compute_equalarea_corr.  The output is a line graph.
     See Fig. 3a in Klingaman et al. (2017) for an example.
-    
+
     Note that the correlation at the central point (0 km) is not plotted, as this is 1.0 by definition.
-       
+
     Arguments:
     * distance_correlations (n_datasets,max_box_distance) or (max_box_distance):
         Composite correlations as a function of physical distance, averaged over
@@ -746,7 +756,7 @@ def plot_equalarea_corr(distance_correlations,distance_ranges,distance_max,model
         distance_ranges is valid, as output from compute_equalarea_corr.  If a 1D
         array, then the routine assumes that the input contains > 1 set of values
         from multiple datasets.
-            
+
     Arguments that may be required (see below):
     * model_dict:
         The dictionary containing information about this dataset.  Required only if plotting
@@ -760,7 +770,7 @@ def plot_equalarea_corr(distance_correlations,distance_ranges,distance_max,model
     * set_desc:
         A string containing a description for this set of datasets.  Used in output plot filename.
         Required only if plotting data for more than one dataset.
-    
+
     Optional arguments:
         * legend:
         If set to True, include a legend on the graph.  Default is True.
@@ -770,7 +780,7 @@ def plot_equalarea_corr(distance_correlations,distance_ranges,distance_max,model
 
     print '--> Plotting correlations vs. distance for all models.'
     max_box_distance,max_boxes,max_timesteps = parameters()
-    
+
     if distance_correlations.ndim == 1:
         if model_dict == None:
             raise Exception('You are plotting correlations for only one dataset, but you have not specified a dataset dictionary with the model_dict option to plot_equalarea_corr.')
@@ -791,7 +801,7 @@ def plot_equalarea_corr(distance_correlations,distance_ranges,distance_max,model
         raise Exception('plot_equalarea_corr expects the distance_correlations argument to be either a one-dimensional (for only one dataset) or two-dimensional (for multiple datasets).')
 
     cfp.setvars(file='asop_coherence.'+set_desc+'_precip_spatial_correlations.ps',text_fontsize=20,axis_label_fontsize=20,legend_text_size=18)
-    cfp.gopen(figsize=[10,9])
+    cfp.gopen()
 
     if distance_correlations.ndim == 2:
         dmax=np.amax(distance_ranges[:,2,:])
@@ -803,9 +813,9 @@ def plot_equalarea_corr(distance_correlations,distance_ranges,distance_max,model
             ypts=distance_correlations[model,1:distance_max[model]].flatten()
             print xpts,ypts
             if model == nmodels-1 and legend:
-                cfp.lineplot(x=xpts,y=ypts,linestyle=':',marker='o',color=colors[model],markersize=8,label=legend_names[model],xticks=np.arange(0,dmax+1,dmax/10),yticks=np.arange(12)*0.1-0.1,legend_location=legend_location)
+                cfp.lineplot(x=xpts,y=ypts,linestyle=':',marker='o',color=colors[model],markersize=8,label=legend_names[model],legend_location=legend_location,xticks=np.arange(0,dmax+1,dmax//10),yticks=np.round(np.arange(12)*0.1-0.1,1))
             else:
-                cfp.lineplot(x=xpts,y=ypts,linestyle=':',marker='o',color=colors[model],markersize=8,label=legend_names[model],xticks=np.arange(0,dmax+1,dmax/10),yticks=np.arange(12)*0.1-0.1)
+                cfp.lineplot(x=xpts,y=ypts,linestyle=':',marker='o',color=colors[model],markersize=8,label=legend_names[model],xticks=np.arange(0,dmax+1,dmax//10),yticks=np.round(np.arange(12)*0.1-0.1,1))
             for dist in xrange(1,distance_max[model]):
                 xpts=[distance_ranges[model,0,dist],distance_ranges[model,2,dist]]
                 ypts=[distance_correlations[model,dist],distance_correlations[model,dist]]
@@ -818,10 +828,10 @@ def plot_equalarea_corr(distance_correlations,distance_ranges,distance_max,model
         ypts=distance_correlations[1:distance_max].flatten()
         if legend:
             cfp.lineplot(x=xpts,y=ypts,linestyle=':',marker='o',color=colors,markersize=8,label=legend_names,legend_location=legend_location,
-                         xticks=np.arange(0,dmax+1,dmax/10),yticks=np.arange(12)*0.1-0.1)
+                         xticks=np.arange(0,dmax+1,dmax//10),yticks=np.round(np.arange(12)*0.1-0.1,1))
         else:
             cfp.lineplot(x=xpts,y=ypts,linestyle=':',marker='o',color=colors,markersize=8,label=legend_names,legend_location=legend_location,
-                         xticks=np.arange(0,dmax+1,dmax/10),yticks=np.arange(12)*0.1-0.1)
+                         xticks=np.arange(0,dmax+1,dmax//10),yticks=np.round(np.arange(12)*0.1-0.1,1))
         for dist in xrange(1,distance_max):
             xpts=[distance_ranges[0,dist],distance_ranges[2,dist]]
             ypts=[distance_correlations[dist],distance_correlations[dist]]
@@ -829,9 +839,9 @@ def plot_equalarea_corr(distance_correlations,distance_ranges,distance_max,model
 
     cfp.plotvars.plot.plot([0,xmax],[0,0],linestyle=':',color='black')
 #    cfp.plotvars.plot.set_xticks(np.arange(0,xmax,max_box_size/10))
-    cfp.plotvars.plot.set_xticklabels(np.arange(0,dmax+1,dmax/10,dtype=np.int),fontsize=18)
+    cfp.plotvars.plot.set_xticklabels(np.arange(0,dmax+1,dmax//10),fontsize=16)
 #    cfp.plotvars.plot.set_yticks(np.arange(12)*0.1-0.1)
-    cfp.plotvars.plot.set_yticklabels(np.arange(12)*0.1-0.1,fontsize=18)
+    cfp.plotvars.plot.set_yticklabels(np.round(np.arange(12)*0.1-0.1,1),fontsize=16)
     cfp.plotvars.plot.set_xlabel('Distance from central gridpoint (km)',fontsize=20)
     cfp.plotvars.plot.set_ylabel('Lag=0 correlation (mean of sub-regions)',fontsize=20)
     cfp.gclose()
@@ -855,13 +865,13 @@ def plot_autocorr(time_correlations,time_max,dt=None,model_dict=None,colors=None
         The longest lag for which the data is time_correlations is valid, as output from
         compute_autocorr.  If a 1D array, then the routine assumes that the input contains
         > 1 sets of values from multiple datasets.
-        
+
     Arguments that may be required (see below):
     * model_dict:
         The dictionary containing information about this dataset.  Required only if plotting
         data for one dataset.
     * dt (n_datasets):
-        An array containing the temporal sampling frequency for each input dataset.  Required 
+        An array containing the temporal sampling frequency for each input dataset.  Required
         only if plotting data for more than one dataset.
     * colors (n_datasets):
         A list of line colors for each dataset.  Required only if plotting data for more than
@@ -872,7 +882,7 @@ def plot_autocorr(time_correlations,time_max,dt=None,model_dict=None,colors=None
     * set_desc:
         A string containing a description for this set of datasets.  Used in output plot filename.
         Required only if plotting data for more than one dataset.
-        
+
     Optional arguments:
     * legend:
         If set to True, include a legend on the graph.  Default is True.
@@ -881,7 +891,7 @@ def plot_autocorr(time_correlations,time_max,dt=None,model_dict=None,colors=None
     """
 
     print '--> Plotting correlations vs. time for all models.'
-    
+
     if time_correlations.ndim == 1:
         if model_dict == None:
             raise Exception('You are plotting correlations for only one dataset, but you have not specified a dataset dictionary with the model_dict option to plot_autocorr.')
@@ -906,9 +916,13 @@ def plot_autocorr(time_correlations,time_max,dt=None,model_dict=None,colors=None
         raise Exception('plot_autocorr expects the time_correlations argument to be either a one-dimensional (for only one dataset) or two-dimensional (for multiple datasets).')
 
     cfp.setvars(file='asop_coherence.'+set_desc+'_precip_temporal_correlations.ps',text_fontsize=20,axis_label_fontsize=20,legend_text_size=18)
-    cfp.gopen(figsize=[10,9])
-
-    dt_min = dt/60
+    cfp.gopen()
+    if np.amax(dt) >= 86400:
+        dt_min = dt/86400.0
+        t_units='days'
+    else:
+        dt_min = dt/60
+        t_units='minutes'
     tmax=np.amax((time_max-1)*dt_min)
     xmax=tmax+np.amax(dt_min)*0.5
     cfp.gset(xmin=0,xmax=xmax,ymin=-0.5,ymax=1.0)
@@ -920,19 +934,19 @@ def plot_autocorr(time_correlations,time_max,dt=None,model_dict=None,colors=None
             print xpts,ypts
             if model == nmodels-1 and legend:
                 cfp.lineplot(x=xpts[1:],y=ypts[1:],linestyle=':',marker='o',color=colors[model],markersize=8,label=legend_names[model],
-                             xticks=np.arange(11)*tmax//10,yticks=np.arange(12)*0.1-0.1,legend_location=legend_location)
+                             xticks=np.arange(11)*tmax//10,yticks=np.round(np.arange(12)*0.1-0.1,1),legend_location=legend_location)
             else:
                 cfp.lineplot(x=xpts[1:],y=ypts[1:],linestyle=':',marker='o',color=colors[model],markersize=8,label=legend_names[model],
-                             xticks=np.arange(11)*tmax//10,yticks=np.arange(12)*0.1-0.1)
+                             xticks=np.arange(11)*tmax//10,yticks=np.round(np.arange(12)*0.1-0.1,1))
     elif time_correlations.ndim == 1:
         xpts=(np.arange(time_max))*dt_min
         ypts=time_correlations[0:time_max]
         cfp.lineplot(x=xpts[1:],y=ypts[1:],linestyle=':',marker='o',color=colors,markersize=8,label=legend_names,
-                     xticks=np.arange(11)*tmax//10,yticks=np.arange(12)*0.1-0.1)
+                     xticks=np.arange(11)*tmax//10,yticks=np.round(np.arange(12)*0.1-0.1,1))
 
     cfp.plotvars.plot.plot([0,xmax],[0,0],linestyle=':',color='black')
-    cfp.plotvars.plot.set_xticklabels(np.arange(11)*tmax//10,fontsize=18)
-    cfp.plotvars.plot.set_yticklabels(np.arange(12)*0.1-0.1,fontsize=18)
-    cfp.plotvars.plot.set_xlabel('Time (minutes)',fontsize=20)
+    cfp.plotvars.plot.set_xticklabels(np.arange(11)*tmax//10,fontsize=16)
+    cfp.plotvars.plot.set_yticklabels(np.round(np.arange(12)*0.1-0.1,1),fontsize=16)
+    cfp.plotvars.plot.set_xlabel('Time ('+t_units+')',fontsize=20)
     cfp.plotvars.plot.set_ylabel('Auto-correlation (mean of all points)',fontsize=20)
     cfp.gclose()
