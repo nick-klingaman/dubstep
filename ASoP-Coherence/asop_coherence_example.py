@@ -152,7 +152,7 @@ if __name__ == '__main__':
         # Compute correlations as a function of native gridpoints, by dividing
         # analysis region into sub-regions (boxes of length region_size).  Also
         # computes lag correlations to a maximum lag of lag_length.
-        corr_map,lag_vs_distance,autocorr,npts = asop.compute_equalgrid_corr(precip,asop_dict)
+        corr_map,lag_vs_distance,autocorr,npts_map,npts = asop.compute_equalgrid_corr(precip,asop_dict)
 
         # Plot correlations as a function of native gridpoints and time lag
         # (e.g., Figs. 2c and 2e in Klingaman et al. 2017).
