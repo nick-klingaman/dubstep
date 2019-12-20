@@ -1,2 +1,2 @@
 # asop_duration
-2-D histograms for Precipitation bins vs. Duration
+2D and 1D histograms for Precipitation vs. Duration
