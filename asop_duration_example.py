@@ -86,7 +86,7 @@ def get_dictionary(key):
         asop_dict['lag_length']   = 6
         asop_dict['grid_type']    = 'N48'
         asop_dict['time_type']    = 'Day'
-        asop_dict['grid_desc']    = 'N96'
+        asop_dict['grid_desc']    = 'N48'
         asop_dict['time_desc']    = 'Day'
         asop_dict['autocorr_length'] = 60*60*24
     elif key == 'CMORPH':
