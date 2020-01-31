@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import BoundaryNorm
 from mpl_toolkits.basemap import Basemap
 
-#path of your analysis
+#Output path
 path = '/gws/nopw/j04/klingaman/amulya/scripts/s2s/coupling/output/'
 
 #Ocean mask
