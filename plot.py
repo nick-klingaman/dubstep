@@ -7,17 +7,20 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import BoundaryNorm
 from mpl_toolkits.basemap import Basemap
 
+#path of your analysis
 path = '/gws/nopw/j04/klingaman/amulya/scripts/s2s/coupling/output/'
 
+#Ocean mask
 mask = Dataset('/gws/nopw/j04/klingaman/amulya/data/surface_s2s_skill/soilm/dubstep_output/UKMO/SA_UKMO_ensemble_sm20_weekly_hindcasts_lead1-5_200001.nc', 'r').variables['week_sm20'][:][0,0,0,:,:]
 mask[mask<0] = np.nan
 mask[mask>=0] = 1.0
 
+#Land mask
 oc = Dataset('/gws/nopw/j04/klingaman/amulya/data/surface_s2s_skill/soilm/dubstep_output/UKMO/SA_UKMO_ensemble_sm20_weekly_hindcasts_lead1-5_200001.nc', 'r').variables['week_sm20'][:][0,0,0,:,:]
 oc[oc>=0] = np.nan
 oc[oc<0] = 9000
 
-
+#Load numpy output for each S2S data and all of the coupling strength indices
 a = np.load('../output/era5.npz')
 era5_gam = a['gam']
 era5_tci = a['tci']
@@ -46,24 +49,22 @@ ecmwf_tet = a['tet']
 ecmwf_pleg = a['pleg']
 ecmwf_tleg = a['tleg']
 
-
+#Stack the coupling strength indices for different S2S data together
 gam = np.stack((era5_gam, ukmo_gam, ncep_gam, ecmwf_gam))
 tci = np.stack((era5_tci, ukmo_tci, ncep_tci, ecmwf_tci))
 tet = np.stack((era5_tet, ukmo_tet, ncep_tet, ecmwf_tet))
 pleg = np.stack((era5_pleg, ukmo_pleg, ncep_pleg, ecmwf_pleg))
 tleg = np.stack((era5_tleg, ukmo_tleg, ncep_tleg, ecmwf_tleg))
 
-latlim = [-49.5,19.5]
-lonlim = [-90,-20]
-lon = np.arange(lonlim[0],lonlim[1]+0.5,1.5)
-lat = np.arange(latlim[0],latlim[1]+0.5,1.5)
-lw = 1
-gl = 20
-latlim = [-50,15]
-lonlim = [-90,-30]
-data = ['ERA5','UKMO','NCEP','ECMWF']
+lon = np.arange(lonlim[0],lonlim[1]+0.5,1.5) #longitude array
+lat = np.arange(latlim[0],latlim[1]+0.5,1.5) #latitde array
+lw = 1 #linewidth
+gl = 20 #lat lon skips for drawing on the map
+latlim = [-50,15] #latitude limits
+lonlim = [-90,-30] #longitude limits
+data = ['ERA5','UKMO','NCEP','ECMWF'] #dataset titles
 
-#Zeng's gamma
+#Zeng's gamma plot
 cmap = plt.get_cmap('RdBu'); cmap.set_bad(color = '0.75', alpha = 1.)
 cmin = -0.2
 cmax = 0.2
@@ -111,7 +112,7 @@ plt.savefig(path+label+'_'+title+'.png', bbox_inches='tight')
 #plt.show()
 
 
-#TCI
+#TCI plot
 cmap = plt.get_cmap('RdBu'); cmap.set_bad(color = '0.75', alpha = 1.)
 cmin = -1
 cmax = 1
@@ -159,7 +160,7 @@ plt.savefig(path+label+'_'+title+'.png', bbox_inches='tight')
 #plt.show()
 
 
-#TET
+#TET plot
 cmap = plt.get_cmap('RdBu'); cmap.set_bad(color = '0.75', alpha = 1.)
 cmin = -1
 cmax = 1
@@ -209,7 +210,7 @@ plt.savefig(path+label+'_'+title+'.png', bbox_inches='tight')
 
 #Two-legged metrics
 
-#PRECIP
+#SM-ET-PRECIP pathway plot
 cmap = plt.get_cmap('RdBu'); cmap.set_bad(color = '0.75', alpha = 1.)
 cmin = [-1,-4,-2]
 cmax = [1,4,2]
@@ -256,7 +257,7 @@ for i in range(3):
   plt.savefig(path+'P_'+label[i]+'_'+title[i]+'.png', bbox_inches='tight')
   #plt.show()
 
-#T2M
+#SM-ET-T2M pathway plot
 cmap = plt.get_cmap('RdBu'); cmap.set_bad(color = '0.75', alpha = 1.)
 cmin = [-1,-2,-1]
 cmax = [1,2,1]
