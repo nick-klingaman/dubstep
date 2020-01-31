@@ -2,7 +2,6 @@
 DUBSTEP Activity on Surface-Atmosphere Coupling Strengths
 
 ####################################################################################
-'''
 
 Scripts for Surface-Atmosphere Coupling Strength Metrics 
 
@@ -18,6 +17,5 @@ Scripts with dataset names (era5.py, ecmwf.py etc.) calculate the coupling stren
 
 Script plot.py uses the numpy output files from the each dataset script and plots out figures for the analysis. 
 
-'''
 ####################################################################################
 
