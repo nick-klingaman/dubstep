@@ -1,6 +1,10 @@
 # asop_duration
-2D and 1D histograms for Precipitation vs. Duration
+Author: Amulya Chevuturi (a.chevuturi@reading.ac.uk)
 
+Adapted from Analysing Scales of Precipitaiton (ASoP) diagnostics https://github.com/nick-klingaman/ASoP
+Reference: Klingaman, N. P., Martin, G. M., and Moise, A.: ASoP (v1.0): a set of methods for analyzing scales of precipitation in general circulation models, Geosci. Model Dev., 10, 57–83, https://doi.org/10.5194/gmd-10-57-2017, 2017.
+
+2D and 1D histograms for Precipitation Intensity vs. Time Duration:
 To analyse the differences in rainfall variability, we use a new set of diagnostics (“duration diagnostics”) which 
 compare the precipitation duration characteristics across model resolutions and observation. Using these diagnostics, 
 we measure the probability of the duration of discrete precipitation bins and probability of length of dry spells. 
