@@ -1,0 +1,6 @@
+include README.rst
+include ASoP1_spectral/tests/reference/test_precipitation_dataset.nc
+include ASoP1_spectral/tests/reference/test_precipitation_hist.nc
+include ASoP1_spectral/tests/reference/test_precipitation_histmap_act.png
+include ASoP1_spectral/tests/reference/test_precipitation_histmap_frac.png
+include ASoP1_spectral/tests/reference/test_hist1d_frac.png
