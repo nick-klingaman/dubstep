@@ -1,4 +1,3 @@
-
 from __future__ import division
 import glob
 import numpy as np
@@ -17,8 +16,16 @@ execfile('grab_data.py')
 
 def read_hindcasts(season):
   '''
-  read_hindcasts
-  M. Young, April 2019
+  function: read_hindcasts
+  Reads in dubstep hindcast data and CHIRPS observations
+  for skill analysis
+
+  input = season - string with the extended season name
+   (can be either 'NDJFM' or 'MMJAS')
+
+  outputs = chirps,ukmo,ncep,ecmf,chirps4bam,bam,week_mid_dates,week_mid_dates4bam
+
+  M. Young, 02/03/2020
   '''
   dir_in = '/gws/nopw/j04/ncas_climate_vol1/users/myoung02/datasets/DUBSTEP_data/'
   # number of ensemble members for each forecast

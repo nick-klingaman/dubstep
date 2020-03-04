@@ -1,17 +1,12 @@
 '''
-Analyse skill of weekly S2S precipitation forecasts
+Saves forecast probabilities from ensemble members of
+S2S weekly mean precipitation forecasts
 from UKMO, NCEP and ECMWF over a given region
 
-1) Reads in data saved over the given region from
-'save_weekly_forecasts_ukmo_ncep.py'
-'save_weekly_forecasts_ecmf.py'
+current set up is for tercile categories but
+could be adjusted accordingly
 
-2) Computes mean precipitation, bias, anomaly correlation coefficient
-and brier skill scores
-
-3) Plots results as spatial maps
-
-M. Young 29/06/2018
+M. Young 02/03/2020
 '''
 from __future__ import division
 import glob
