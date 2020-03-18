@@ -20,22 +20,22 @@ N4 = 72 ; NB4 = 38
 N5 = 220; NB5 = 110
 REG = 6
 
-mjo = np.load('../mjo_bchirps.npz')
+mjo = np.load('mjo_bchirps.npz')
 bchirps = mjo['mjoa_bchirps']
 
-mjo = np.load('../mjo_chirps.npz')
+mjo = np.load('mjo_chirps.npz')
 chirps = mjo['mjoa_chirps']
 
-mjo = np.load('../mjo_ukmo.npz')
+mjo = np.load('mjo_ukmo.npz')
 ukmo = mjo['mjoa_ukmo']
 
-mjo = np.load('../mjo_ncep.npz')
+mjo = np.load('mjo_ncep.npz')
 ncep = mjo['mjoa_ncep']
 
-mjo = np.load('../mjo_ecmf.npz')
+mjo = np.load('mjo_ecmf.npz')
 ecmf = mjo['mjoa_ecmf']
 
-mjo = np.load('../mjo_bam.npz')
+mjo = np.load('mjo_bam.npz')
 bam = mjo['mjoa_bam']
 
 
