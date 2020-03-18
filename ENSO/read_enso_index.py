@@ -20,7 +20,7 @@ def on_index(SY,EY,MON):
   import numpy as np
   import pandas as pd
   
-  df = pd.read_table('/gws/nopw/j04/klingaman/amulya/data/obs/enso/oni/oni.txt', delim_whitespace=True, header=0) 
+  df = pd.read_table('oni.txt', delim_whitespace=True, header=0) 
   anom = df['ANOM'].values
   yrs  = df['YR'].values
   mons  = df['MON'].values
