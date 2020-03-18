@@ -20,42 +20,42 @@ NAL = 220
 REG = 6
 
 '''
-chirps = np.load('../enso_chirps.npz')
+chirps = np.load('enso_chirps.npz')
 pel_chirps = chirps['apel_chirps']
 pne_chirps = chirps['apne_chirps']
 pla_chirps = chirps['apla_chirps']
 pno_chirps = chirps['apno_chirps']
 pal_chirps = chirps['apal_chirps']
 
-bchirps = np.load('../enso_bchirps.npz')
+bchirps = np.load('enso_bchirps.npz')
 pel_bchirps = bchirps['apel_bchirps']
 pne_bchirps = bchirps['apne_bchirps']
 pla_bchirps = bchirps['apla_bchirps']
 pno_bchirps = bchirps['apno_bchirps']
 pal_bchirps = bchirps['apal_bchirps']
 
-bam = np.load('../enso_bam.npz')
+bam = np.load('enso_bam.npz')
 pel_bam = np.nanmean(bam['apel_bam'], axis=2)
 pne_bam = np.nanmean(bam['apne_bam'], axis=2)
 pla_bam = np.nanmean(bam['apla_bam'], axis=2)
 pno_bam = np.nanmean(bam['apno_bam'], axis=2)
 pal_bam = np.nanmean(bam['apal_bam'], axis=2)
 
-ecmf = np.load('../enso_ecmf.npz')
+ecmf = np.load('enso_ecmf.npz')
 pel_ecmf = np.nanmean(ecmf['apel_ecmf'], axis=2)
 pne_ecmf = np.nanmean(ecmf['apne_ecmf'], axis=2)
 pla_ecmf = np.nanmean(ecmf['apla_ecmf'], axis=2)
 pno_ecmf = np.nanmean(ecmf['apno_ecmf'], axis=2)
 pal_ecmf = np.nanmean(ecmf['apal_ecmf'], axis=2)
 
-ncep = np.load('../enso_ncep.npz')
+ncep = np.load('enso_ncep.npz')
 pel_ncep = np.nanmean(ncep['apel_ncep'], axis=2)
 pne_ncep = np.nanmean(ncep['apne_ncep'], axis=2)
 pla_ncep = np.nanmean(ncep['apla_ncep'], axis=2)
 pno_ncep = np.nanmean(ncep['apno_ncep'], axis=2)
 pal_ncep = np.nanmean(ncep['apal_ncep'], axis=2)
 
-ukmo = np.load('../enso_ukmo.npz')
+ukmo = np.load('enso_ukmo.npz')
 pel_ukmo = np.nanmean(ukmo['apel_ukmo'], axis=2)
 pne_ukmo = np.nanmean(ukmo['apne_ukmo'], axis=2)
 pla_ukmo = np.nanmean(ukmo['apla_ukmo'], axis=2)
