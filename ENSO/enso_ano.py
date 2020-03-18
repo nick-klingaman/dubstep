@@ -6,35 +6,35 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import BoundaryNorm
 from mpl_toolkits.basemap import Basemap
 
-chirps = np.load('../enso_chirps.npz')
+chirps = np.load('enso_chirps.npz')
 pel_chirps = chirps['apel_chirps']
 pne_chirps = chirps['apne_chirps']
 pla_chirps = chirps['apla_chirps']
 pno_chirps = chirps['apno_chirps']
 chirps = np.stack((np.nanmean(pel_chirps, axis=0),np.nanmean(pne_chirps, axis=0),np.nanmean(pla_chirps, axis=0),np.nanmean(pno_chirps, axis=0)))
 
-bam = np.load('../enso_bam.npz')
+bam = np.load('enso_bam.npz')
 pel_bam = bam['apel_bam']
 pne_bam = bam['apne_bam']
 pla_bam = bam['apla_bam']
 pno_bam = bam['apno_bam']
 bam = np.stack((np.nanmean(pel_bam, axis=0),np.nanmean(pne_bam, axis=0),np.nanmean(pla_bam, axis=0),np.nanmean(pno_bam, axis=0)))
 
-ecmf = np.load('../enso_ecmf.npz')
+ecmf = np.load('enso_ecmf.npz')
 pel_ecmf = ecmf['apel_ecmf']
 pne_ecmf = ecmf['apne_ecmf']
 pla_ecmf = ecmf['apla_ecmf']
 pno_ecmf = ecmf['apno_ecmf']
 ecmf = np.stack((np.nanmean(pel_ecmf, axis=0),np.nanmean(pne_ecmf, axis=0),np.nanmean(pla_ecmf, axis=0),np.nanmean(pno_ecmf, axis=0)))
 
-ncep = np.load('../enso_ncep.npz')
+ncep = np.load('enso_ncep.npz')
 pel_ncep = ncep['apel_ncep']
 pne_ncep = ncep['apne_ncep']
 pla_ncep = ncep['apla_ncep']
 pno_ncep = ncep['apno_ncep']
 ncep = np.stack((np.nanmean(pel_ncep, axis=0),np.nanmean(pne_ncep, axis=0),np.nanmean(pla_ncep, axis=0),np.nanmean(pno_ncep, axis=0)))
 
-ukmo = np.load('../enso_ukmo.npz')
+ukmo = np.load('enso_ukmo.npz')
 pel_ukmo = ukmo['apel_ukmo']
 pne_ukmo = ukmo['apne_ukmo']
 pla_ukmo = ukmo['apla_ukmo']
@@ -103,7 +103,3 @@ cb = matplotlib.colorbar.ColorbarBase(ax,cmap=cmap,norm=norm,extend='both',spaci
 plt.savefig(str(clabel)+'_vertical_colorbar.eps')
 #plt.show()
 
-
-#for d in range(1):
-#    for p in range(1):
-#        for w in range(1):
