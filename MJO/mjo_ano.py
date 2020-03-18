@@ -6,22 +6,22 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import BoundaryNorm
 from mpl_toolkits.basemap import Basemap
 
-mjo = np.load('../mjo_bchirps.npz')
+mjo = np.load('mjo_bchirps.npz')
 bchirps = mjo['mjoa_bchirps']
 
-mjo = np.load('../mjo_chirps.npz')
+mjo = np.load('mjo_chirps.npz')
 chirps = mjo['mjoa_chirps']
 
-mjo = np.load('../mjo_ukmo.npz')
+mjo = np.load('mjo_ukmo.npz')
 ukmo = mjo['mjoa_ukmo']
 
-mjo = np.load('../mjo_ncep.npz')
+mjo = np.load('mjo_ncep.npz')
 ncep = mjo['mjoa_ncep']
 
-mjo = np.load('../mjo_ecmf.npz')
+mjo = np.load('mjo_ecmf.npz')
 ecmf = mjo['mjoa_ecmf']
 
-mjo = np.load('../mjo_bam.npz')
+mjo = np.load('mjo_bam.npz')
 bam = mjo['mjoa_bam']
 
 bchirps_ano = [0]*4;chirps_ano = [0]*4;ukmo_ano = [0]*4;ncep_ano = [0]*4;ecmf_ano = [0]*4;bam_ano = [0]*4
