@@ -6,6 +6,9 @@ This repository incorporates several pieces of code, which are maintained at the
 ## "s2s_skill" - Sub-seasonal lagged ensembles for weekly rainfall
 Code to compute weekly rainfall from S2S forecasts, which can be adapted to any other single-level field of interest, and to compute lagged ensembles from ECMWF and NCEP forecasts (relative to the less-frequent UKMO dates) is contained in "s2s_skill".  The code can also compute climatologies and anomalies from these, as well as forecast metrics such as the correlation coefficient (against observations) and the Brier Skill Score.
 
+## "conditional_skill" - Conditional skill analysis
+Code to compute prediction performance for sub-seasonal forecasts, conditional upon the phase of large-scale variability, such as the Madden-Julian Oscillation or the El Nino-Southern Oscillation.  The code is maintained here: https://github.com/achevuturi/conditional_skill_analysis.  Original code by Amulya Chevuturi (University of Reading).
+
 ## "WAM-2layers" - Water Accounting Model
 The Water Accounting Model, which can trace evaporation to precipitation or precipitation to evaporation, for a specified region, in reanalysis or model data.  This code is maintained here: https://github.com/ruudvdent/WAM2layersPython.  Original code by Ruud van der Ent (Technical University of Delft), modified by Liang Guo (University of Reading).
 
