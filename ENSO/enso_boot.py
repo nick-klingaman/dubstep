@@ -21,21 +21,21 @@ NAL = 220
 REG = 6
 
 
-bchirps = np.load('../enso_bchirps.npz')
+bchirps = np.load('enso_bchirps.npz')
 pel_bchirps = bchirps['apel_bchirps']
 pne_bchirps = bchirps['apne_bchirps']
 pla_bchirps = bchirps['apla_bchirps']
 pno_bchirps = bchirps['apno_bchirps']
 pal_bchirps = bchirps['apal_bchirps']
 
-chirps = np.load('../enso_chirps.npz')
+chirps = np.load('enso_chirps.npz')
 pel_chirps = chirps['apel_chirps']
 pne_chirps = chirps['apne_chirps']
 pla_chirps = chirps['apla_chirps']
 pno_chirps = chirps['apno_chirps']
 pal_chirps = chirps['apal_chirps']
 
-bam = np.load('../enso_bam.npz')
+bam = np.load('enso_bam.npz')
 pel_bam = np.nanmean(bam['apel_bam'], axis=2)
 pne_bam = np.nanmean(bam['apne_bam'], axis=2)
 pla_bam = np.nanmean(bam['apla_bam'], axis=2)
