@@ -16,7 +16,7 @@ def rmm_index(SY,EY,MON):
   import numpy as np
   import pandas as pd
   
-  df = pd.read_table('/gws/nopw/j04/ncas_climate_vol1/users/amulya/data/obs/mjo/rmm.txt', delim_whitespace=True, skiprows=2, usecols=range(7), header=None) 
+  df = pd.read_table('rmm.txt', delim_whitespace=True, skiprows=2, usecols=range(7), header=None) 
 
   amplt = df[df.columns[6]].values
   phase = df[df.columns[5]].values
